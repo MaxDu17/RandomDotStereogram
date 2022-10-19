@@ -49,6 +49,32 @@ def rotate_image(filename, savename):
 
     writer.close()
 
+def render_video(filename, savename):
+    video = imageio.get_reader(filename)
+    writer = imageio.get_writer(f"{savename}.gif", fps=20)
+    i = 0
+    for frame in video:
+        im = resize(frame, (RESOLUTION, RESOLUTION))[:, :, :-1]  # remove the alpha channel
+        im = np.mean(im, axis=2)
+        depth_map = 1 - im
+        depth_map = np.rot90(depth_map, k=3).astype(np.float32)
+        print(i)
+        fig, ax = plt.subplots()
+        x_list, shifted_x_list, y_list = make_random_scatter(depth_map)
+        ax.scatter(x_list, y_list, s=SIZE, color="#3AF2F8", alpha=0.8)
+        ax.scatter(shifted_x_list, y_list, s=SIZE, color="#ff370f", alpha=0.8)
+        with io.BytesIO() as buff:
+            fig.savefig(buff, format='raw')
+            buff.seek(0)
+            w, h = fig.canvas.get_width_height()
+            data = np.frombuffer(buff.getvalue(), dtype=np.uint8)
+            im = data.reshape((int(h), int(w), -1))
+            writer.append_data(im)  # grayscale rendering
+        plt.close(fig)
+        i += 1
+
+    writer.close()
+
 def simple_render(filename, savename):
     im = imageio.imread(filename)
     im = resize(im, (RESOLUTION, RESOLUTION))[:, :, :-1]  # remove the alpha channel
@@ -91,6 +117,7 @@ def depth_demo(savename):
 
 
 if __name__ == "__main__":
-    simple_render("whale.png", "whale_dot")
+    render_video("rick-roll.mp4", "richard")
+    # simple_render("whale.png", "whale_dot")
     # depth_demo("sine")
     # rotate_image("whale.png", "bouncing_whale")
