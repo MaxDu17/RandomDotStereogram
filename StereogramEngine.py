@@ -117,7 +117,7 @@ def depth_demo(savename):
 
 
 if __name__ == "__main__":
-    render_video("rick-roll.mp4", "richard")
+    render_video("balls.mp4", "undulating_balls")
     # simple_render("whale.png", "whale_dot")
     # depth_demo("sine")
     # rotate_image("whale.png", "bouncing_whale")
