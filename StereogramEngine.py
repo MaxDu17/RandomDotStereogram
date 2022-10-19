@@ -9,17 +9,6 @@ NUMBER_POINTS = 5000
 SIZE = 1
 RESOLUTION = 512
 
-
-
-
-
-
-# for i in range(len(x_list)):
-#     nearest_x = int(x_list[i])
-#     nearest_y = int(y_list[i])
-#     if mask[nearest_x, nearest_y]:
-#         shifted_x_list[i] -= 0.01 * RESOLUTION
-
 def make_random_scatter(depth_map):
     # depth map should go from 0 to 1
     x_list = np.random.random((NUMBER_POINTS)) * RESOLUTION
@@ -28,7 +17,6 @@ def make_random_scatter(depth_map):
     shifted_x_list -= 0.005 * RESOLUTION
 
     for i in range(len(x_list)):
-        radius_from_center = np.sqrt((x_list[i] - RESOLUTION / 2)**2 + (y_list[i] - RESOLUTION / 2)**2)
         nearest_x = int(x_list[i])
         nearest_y = int(y_list[i])
         shifted_x_list[i] -= 0.015 * depth_map[nearest_x, nearest_y] * RESOLUTION #radius_from_center
@@ -61,6 +49,20 @@ def rotate_image(filename, savename):
 
     writer.close()
 
+def simple_render(filename, savename):
+    im = imageio.imread(filename)
+    im = resize(im, (RESOLUTION, RESOLUTION))[:, :, :-1]  # remove the alpha channel
+    im = np.mean(im, axis=2)
+    depth_map = 1 - im
+    depth_map = np.rot90(depth_map, k=3).astype(np.float32)
+    x_list, shifted_x_list, y_list = make_random_scatter(depth_map)
+
+    fig, ax = plt.subplots()
+    ax.scatter(x_list, y_list, s=SIZE, color="#3AF2F8", alpha=0.8)
+    ax.scatter(shifted_x_list, y_list, s=SIZE, color="#ff370f", alpha=0.8)
+    fig.savefig(f"{savename}.png")
+    plt.close()
+
 def depth_demo(savename):
     frequency = 3
     input_map = 2 * 3.14 * frequency * np.arange(RESOLUTION) / RESOLUTION
@@ -89,5 +91,6 @@ def depth_demo(savename):
 
 
 if __name__ == "__main__":
-    depth_demo("sine")
+    simple_render("whale.png", "whale_dot")
+    # depth_demo("sine")
     # rotate_image("whale.png", "bouncing_whale")
