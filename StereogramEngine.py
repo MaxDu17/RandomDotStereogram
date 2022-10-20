@@ -75,7 +75,7 @@ def render_video(filename, savename):
 
     writer.close()
 
-def simple_render(filename, savename):
+def simple_render(filename, savename, process = False):
     im = imageio.imread(filename)
     im = resize(im, (RESOLUTION, RESOLUTION))[:, :, :-1]  # remove the alpha channel
     im = np.mean(im, axis=2)
@@ -84,10 +84,25 @@ def simple_render(filename, savename):
     x_list, shifted_x_list, y_list = make_random_scatter(depth_map)
 
     fig, ax = plt.subplots()
-    ax.scatter(x_list, y_list, s=SIZE, color="#3AF2F8", alpha=0.8)
-    ax.scatter(shifted_x_list, y_list, s=SIZE, color="#ff370f", alpha=0.8)
-    fig.savefig(f"{savename}.png")
-    plt.close()
+    if process:
+        ax.scatter(x_list, y_list, s = SIZE, color = "black")
+        fig.savefig(f"{savename}_randomdots.png")
+        ax.clear()
+        ax.scatter(x_list, y_list, s=SIZE, color="#3AF2F8", alpha=0.8)
+        fig.savefig(f"{savename}_left_eye.png")
+        ax.clear()
+        ax.scatter(shifted_x_list, y_list, s=SIZE, color="#ff370f", alpha=0.8)
+        fig.savefig(f"{savename}_right_eye.png")
+        ax.scatter(x_list, y_list, s=SIZE, color="#3AF2F8", alpha=0.8)
+        fig.savefig(f"{savename}.png")
+        plt.close()
+
+    else:
+        ax.scatter(x_list, y_list, s=SIZE, color="#3AF2F8", alpha=0.8)
+        ax.scatter(shifted_x_list, y_list, s=SIZE, color="#ff370f", alpha=0.8)
+        fig.savefig(f"{savename}.png")
+        plt.close()
+
 
 def depth_demo(savename):
     frequency = 3
@@ -118,6 +133,6 @@ def depth_demo(savename):
 
 if __name__ == "__main__":
     render_video("balls.mp4", "undulating_balls")
-    # simple_render("whale.png", "whale_dot")
+    # simple_render("chungus.png", "chungus_dot", process = True)
     # depth_demo("sine")
     # rotate_image("whale.png", "bouncing_whale")
