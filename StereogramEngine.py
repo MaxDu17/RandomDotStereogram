@@ -132,7 +132,7 @@ def depth_demo(savename):
 
 
 if __name__ == "__main__":
-    render_video("balls.mp4", "undulating_balls")
+    render_video("two_balls.mp4", "undulating_double_balls")
     # simple_render("chungus.png", "chungus_dot", process = True)
     # depth_demo("sine")
-    # rotate_image("whale.png", "bouncing_whale")
+    # rotate_image("smiley.png", "bouncing_smile")
